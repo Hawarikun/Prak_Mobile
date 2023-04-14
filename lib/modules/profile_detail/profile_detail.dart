@@ -21,26 +21,54 @@ class ProfileDetail extends StatefulWidget {
 
 class _ProfileDetail extends State<ProfileDetail> {
   final GlobalKey<FormState> _fromKey = GlobalKey<FormState>();
+  final TextEditingController profileController = TextEditingController();
+  final TextEditingController idController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+
+  final _profileController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _nameController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+
   bool isVisible = false;
 
   @override
   void initState() {
+    if (widget.user.profilePhoto != "") {
+      profileController.text = widget.user.profilePhoto!;
+    }
+    if (widget.user.username != "") {
+      usernameController.text = widget.user.username;
+    }
     if (widget.user.name != "") {
       nameController.text = widget.user.name;
-    } else if (widget.user.email != "") {
+    }
+    if (widget.user.password != "") {
+      passwordController.text = widget.user.password;
+    }
+    if (widget.user.email != "") {
       emailController.text = widget.user.email;
+    }
+    if (widget.user.phoneNumber != "") {
+      phoneController.text = widget.user.phoneNumber!;
     }
     super.initState();
   }
 
   @override
   void dispose() {
-    nameController.dispose();
-    emailController.dispose();
+    _profileController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -52,23 +80,37 @@ class _ProfileDetail extends State<ProfileDetail> {
           SizedBox(
             height: MediaQuery.of(context).padding.top,
           ),
-          Row(
-            children: [
-              IconButton(
-                onPressed: () {
-                  GoRouter.of(context).pop();
-                },
-                icon: const Icon(
-                  Icons.chevron_left_rounded,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    GoRouter.of(context).pop();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.white),
+                    child: const Icon(Icons.chevron_left),
+                  ),
                 ),
-              ),
-              const Text(
-                "Profile Detail",
-              ),
-            ],
+                const SizedBox(width: 8),
+                const Flexible(
+                  child: Text(
+                    "Profile Detail",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(
-            height: 16,
+            height: 32,
           ),
           Expanded(
             child: Form(
@@ -77,10 +119,80 @@ class _ProfileDetail extends State<ProfileDetail> {
                 children: [
                   const CircleAvatar(
                     radius: 50,
-                    backgroundImage: NetworkImage('https://picsum.photos/200'),
+                    backgroundImage: NetworkImage(
+                        "https://cdn.idntimes.com/content-images/community/2020/09/104967619-2451390651819718-4934284928595035666-n-2fc82b7325949c7d003c1c58e17d48b7.jpg"),
+                  ),
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: TextFormField(
+                      controller: usernameController,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        label: const Text("Username"),
+                        hintText: "Username",
+                        suffixIcon: const Icon(
+                          Icons.supervised_user_circle,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            16,
+                          ),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == "") {
+                          return "Username wajib diisi";
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                   const SizedBox(
                     height: 16,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: TextFormField(
+                      controller: passwordController,
+                      obscureText: isVisible,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        isDense: true,
+                        label: const Text("Password"),
+                        hintText: "Password",
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isVisible = !isVisible;
+                            });
+                          },
+                          icon: Icon(isVisible == false
+                              ? Icons.visibility_rounded
+                              : Icons.visibility_off_rounded),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            16,
+                          ),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == "") {
+                          return "Password wajib diisi";
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 32,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -117,27 +229,87 @@ class _ProfileDetail extends State<ProfileDetail> {
                       horizontal: 16,
                     ),
                     child: TextFormField(
-                        controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          label: const Text("Email"),
-                          hintText: "ex : example@gmail.com",
-                          suffixIcon: const Icon(
-                            Icons.email,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              16,
-                            ),
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        label: const Text("Email"),
+                        hintText: "ex : example@gmail.com",
+                        suffixIcon: const Icon(
+                          Icons.email,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            16,
                           ),
                         ),
-                        validator: (value) {
-                          if (!RegExp(
-                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                          ).hasMatch(value!)) {
-                            return 'Please enter a valid email address';
-                          }
-                        }),
+                      ),
+                      validator: (value) {
+                        if (!RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                        ).hasMatch(value!)) {
+                          return 'Please enter a valid email address';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: TextFormField(
+                      controller: phoneController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        label: const Text("Phone Number"),
+                        hintText: "08XXXXXXXXX",
+                        suffixIcon: const Icon(
+                          Icons.numbers,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            16,
+                          ),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == "") {
+                          return "Nama wajib diisi";
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: TextFormField(
+                      controller: profileController,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        label: const Text("Profile"),
+                        hintText: "Masukan link profile",
+                        suffixIcon: const Icon(
+                          Icons.link,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(
+                            16,
+                          ),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == "") {
+                          return "Profile wajib diisi";
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                 ],
               ),
